@@ -24,7 +24,7 @@ class MainViewModel @Inject constructor() : ViewModel() {
         repeat(20) {
             data.add("Item $it")
         }
-        return PagingListWrapper(data, page < 3)
+        return PagingListWrapper(data, page < 2)
     }
 
     val pagerError = easyPager {
@@ -43,6 +43,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         repeat(20) {
             data.add("Item $it")
         }
-        return PagingListWrapper(data, page < 3)
+        return PagingListWrapper(data, page < 2)
     }
 }
