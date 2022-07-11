@@ -4,9 +4,7 @@ A library that provides several functionalities to make it easy to write a list 
 2. It provides default layouts for different paging loading status.
 3. It provides some composable layouts that can be used to form a paging list easily.
    
-<img src="media/easylist.gif">
-
-<img src="media/errorlist.gif">
+<img src="media/easylist.gif" width="30%"> <img src="media/errorlist.gif" width="30%">
 
 # Usage
 To start using this library, apps need to define pager data and provide it to the list
@@ -117,9 +115,9 @@ fun RawPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
 ```
 
 # Customization
-Apps can customize the loading, no more, error content and so on
+Apps can customize the loading, no more, error content and so on.
 
-<img src="media/custom_loadmore.gif">
+<div align=left><img src="media/custom_loadmore.gif" width="30%"></div>
 
 ```kotlin
 @Composable
