@@ -1,6 +1,10 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    `maven-publish`
+    signing
 }
 
 android {
@@ -9,6 +13,7 @@ android {
     defaultConfig {
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
+//        version = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -37,6 +42,85 @@ android {
     }
     composeOptions {
         kotlinCompilerExtensionVersion = libs.versions.androidxCompose.get()
+    }
+
+    publishing {
+        singleVariant("release") {
+            withJavadocJar()
+            withSourcesJar()
+        }
+    }
+}
+
+//val sourcesJar by tasks.registering(Jar::class) {
+//    archiveClassifier.set("sources")
+//    from(android.sourceSets.getByName("main").java.srcDirs)
+//}
+
+fun getPropertyFromProject(key: String) : String{
+    return project.property(key).toString()
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("debug") {
+                groupId = getPropertyFromProject("GROUP_ID")
+                artifactId = getPropertyFromProject("ARTIFACT_ID")
+                version = getPropertyFromProject("VERSION_NAME") + "-SNAPSHOT"
+                from(components["release"])
+//                artifact(tasks["sourcesJar"])
+            }
+            create<MavenPublication>("release") {
+                groupId = getPropertyFromProject("GROUP_ID")
+                artifactId = getPropertyFromProject("ARTIFACT_ID")
+                version = getPropertyFromProject("VERSION_NAME")
+                from(components["release"])
+
+                pom {
+                    name.set(getPropertyFromProject("ARTIFACT_ID"))
+                    description.set(getPropertyFromProject("POM_DESCRIPTION"))
+                    url.set(getPropertyFromProject("POM_URL"))
+
+                    licenses {
+                        license {
+                            name.set(getPropertyFromProject("POM_LICENCE_NAME"))
+                            url.set(getPropertyFromProject("POM_LICENCE_URL"))
+                        }
+                    }
+                    developers {
+                        developer {
+                            id.set(getPropertyFromProject("POM_DEVELOPER_ID"))
+                            name.set(getPropertyFromProject("POM_DEVELOPER_NAME"))
+                            email.set(getPropertyFromProject("POM_DEVELOPER_URL"))
+                        }
+                    }
+                    scm {
+                        connection.set(getPropertyFromProject("POM_SCM_CONNECTION"))
+                        developerConnection.set(getPropertyFromProject("POM_SCM_DEV_CONNECTION"))
+                        url.set(getPropertyFromProject("POM_SCM_URL"))
+                    }
+                }
+            }
+        }
+
+        repositories {
+            maven {
+                val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
+                val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
+                url = if (project.hasProperty("release")) releasesRepoUrl else snapshotsRepoUrl
+                credentials {
+                    val properties = gradleLocalProperties(rootDir)
+                    username = properties["mavenCentralUsername"] as String?
+                    password = properties["mavenCentralPassword"] as String?
+                }
+            }
+        }
+
+    }
+
+    signing {
+        sign(publishing.publications)
     }
 }
 
