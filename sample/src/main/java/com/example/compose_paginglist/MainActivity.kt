@@ -48,6 +48,9 @@ class MainActivity : ComponentActivity() {
                             composable("ErrorPagingList") {
                                 ErrorPagingListScreen()
                             }
+                            composable("EmptyPagingList") {
+                                EmptyPagingListScreen()
+                            }
                         }
                     }
                 }

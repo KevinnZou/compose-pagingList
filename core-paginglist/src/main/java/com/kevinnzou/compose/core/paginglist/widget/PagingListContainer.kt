@@ -1,4 +1,4 @@
-package com.kevinnzou.compose.core.paginglist
+package com.kevinnzou.compose.core.paginglist.widget
 
 import androidx.compose.runtime.Composable
 import androidx.paging.LoadState
@@ -25,6 +25,7 @@ fun <T : Any> PagingListContainer(
             retry
         )
     },
+    emptyListContent: @Composable (() -> Unit)? = { DefaultEmptyListContent() },
     listContent: @Composable () -> Unit,
 ) {
     if (pagingData.loadState.refresh is LoadState.Loading && refreshingContent != null) {
@@ -33,6 +34,8 @@ fun <T : Any> PagingListContainer(
         firstLoadErrorContent {
             pagingData.retry()
         }
+    } else if (pagingData.loadState.refresh is LoadState.NotLoading && pagingData.itemCount == 0 && emptyListContent != null) {
+        emptyListContent()
     } else {
         listContent()
     }

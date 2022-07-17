@@ -1,10 +1,11 @@
-package com.kevinnzou.compose.core.paginglist
+package com.kevinnzou.compose.core.paginglist.easylist
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemsIndexed
+import com.kevinnzou.compose.core.paginglist.widget.*
 
 /**
  * Created By Kevin Zou On 2022/7/4
@@ -38,12 +39,14 @@ fun <T : Any> PagingLazyColumn(
             retry
         )
     },
+    emptyListContent: @Composable (() -> Unit)? = { DefaultEmptyListContent() },
     pagingItemContent: @Composable (index: Int, value: T?) -> Unit,
 ) {
     PagingListContainer(
         pagingData = pagingData,
         refreshingContent = refreshingContent,
-        firstLoadErrorContent = firstLoadErrorContent
+        firstLoadErrorContent = firstLoadErrorContent,
+        emptyListContent = emptyListContent,
     ) {
         LazyColumn(modifier) {
             itemsIndexed(pagingData) { index, value ->

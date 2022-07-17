@@ -1,11 +1,9 @@
-package com.kevinnzou.compose.core.paginglist
+package com.kevinnzou.compose.core.paginglist.widget
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -13,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 /**
  * Created By Kevin Zou On 2022/7/4
@@ -46,23 +45,11 @@ fun DefaultNoMoreContent(noMoreText: String = "No More Data") {
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Divider(
-            modifier = Modifier
-                .width(10.dp)
-                .height(2.dp)
-                .background(Color.Gray)
-        )
         Text(
             text = noMoreText,
             modifier = Modifier
                 .padding(horizontal = 5.dp),
             textAlign = TextAlign.Center
-        )
-        Divider(
-            modifier = Modifier
-                .width(10.dp)
-                .height(2.dp)
-                .background(Color.Gray)
         )
     }
 
@@ -107,5 +94,16 @@ fun DefaultFirstLoadErrorContent(retry: (() -> Unit)?) {
             }
         }
 
+    }
+}
+
+@Composable
+fun DefaultEmptyListContent(text: String = "Empty List") {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = text, fontSize = 18.sp)
     }
 }

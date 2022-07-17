@@ -1,4 +1,4 @@
-package com.kevinnzou.compose.core.paginglist
+package com.kevinnzou.compose.core.paginglist.widget
 
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope

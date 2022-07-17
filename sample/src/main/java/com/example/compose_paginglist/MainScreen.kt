@@ -21,9 +21,9 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.example.compose_paginglist.ui.theme.ComposepagingListTheme
-import com.kevinnzou.compose.core.paginglist.PagingLazyColumn
-import com.kevinnzou.compose.core.paginglist.PagingListContainer
-import com.kevinnzou.compose.core.paginglist.itemPaging
+import com.kevinnzou.compose.core.paginglist.easylist.PagingLazyColumn
+import com.kevinnzou.compose.core.paginglist.widget.PagingListContainer
+import com.kevinnzou.compose.core.paginglist.widget.itemPaging
 
 /**
  * Created By Kevin Zou On 2022/7/5
@@ -31,7 +31,13 @@ import com.kevinnzou.compose.core.paginglist.itemPaging
 @Composable
 fun MainScreen(navController: NavController? = null) {
     val entryList =
-        listOf("EasyPagingList", "RawPagingList", "CustomLoadMore", "ErrorPagingList")
+        listOf(
+            "EasyPagingList",
+            "RawPagingList",
+            "CustomLoadMore",
+            "ErrorPagingList",
+            "EmptyPagingList"
+        )
     Column(
         Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -65,7 +71,7 @@ fun PagingContent(value: String?) {
 
 @Composable
 fun EasyPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
-    val pagerData = viewModel.pager.collectAsLazyPagingItems()
+    val pagerData = viewModel.pager2.collectAsLazyPagingItems()
     PagingLazyColumn(pagingData = pagerData) { _, value ->
         PagingContent(value)
     }
@@ -137,6 +143,14 @@ fun CustomRefreshingContent() {
 @Composable
 fun ErrorPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
     val pagerData = viewModel.pagerError.collectAsLazyPagingItems()
+    PagingLazyColumn(pagingData = pagerData) { _, value ->
+        PagingContent(value)
+    }
+}
+
+@Composable
+fun EmptyPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
+    val pagerData = viewModel.pagerEmpty.collectAsLazyPagingItems()
     PagingLazyColumn(pagingData = pagerData) { _, value ->
         PagingContent(value)
     }
