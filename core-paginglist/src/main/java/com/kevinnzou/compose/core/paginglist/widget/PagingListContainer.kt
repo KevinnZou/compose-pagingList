@@ -14,6 +14,7 @@ import androidx.paging.compose.LazyPagingItems
  * @param pagingData the paging data
  * @param refreshingContent the content will show when list is loading data. By default this will use a [DefaultRefreshingContent]
  * @param firstLoadErrorContent the content will show when list encounters an error data. By default this will use a [DefaultFirstLoadErrorContent]
+ * @param emptyListContent the content will show when list encounters an empty list. By default this will use a [DefaultEmptyListContent]
  * @param listContent the real list content
  */
 @Composable

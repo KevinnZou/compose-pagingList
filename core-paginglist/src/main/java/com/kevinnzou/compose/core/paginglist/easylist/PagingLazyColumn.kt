@@ -20,6 +20,7 @@ import com.kevinnzou.compose.core.paginglist.widget.*
  * @param errorContent the content will show when list encounters an error data. By default this will use a [DefaultErrorContent]
  * @param refreshingContent the content will show when list is loading data. By default this will use a [DefaultRefreshingContent]
  * @param firstLoadErrorContent the content will show when list encounters an error data. By default this will use a [DefaultFirstLoadErrorContent]
+ * @param emptyListContent the content will show when list encounters an empty list. By default this will use a [DefaultEmptyListContent]
  * @param pagingItemContent the content for real paging item
  */
 @Composable
