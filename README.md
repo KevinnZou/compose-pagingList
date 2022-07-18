@@ -123,7 +123,7 @@ fun RawPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
     }
 }
 ```
-3. The second method Wrap the LazyRow with PagingListContainer which provides the first loading status, if you want to control it by yourself, you can directly use the LazyList with itemPaging
+3. The second method Wrap the LazyRow with [PagingListContainer](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/widget/PagingListContainer.kt) which provides the first loading status, if you want to control it by yourself, you can directly use the LazyList with [itemPaging](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/widget/ItemPaging.kt)
 ```kotlin
 @Composable
 fun RawPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
