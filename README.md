@@ -9,7 +9,10 @@ A library that provides several functionalities to make it easy to write a list 
 # Usage
 To start using this library, apps need to define pager data and provide it to the list
 ## Pager Data
-Apps can define the pager data for list in the ViewModel by using [easyPager](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/EasyPager.kt)
+Apps can define the pager data for list in the ViewModel in several ways
+
+1. The simplest way is to use the [easyPager](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/EasyPager.kt).
+It requires the apps wrap the data in [PagingListWrapper](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/pagerconfig/PaglingListWrapper.kt) which need the data list and the hasMore sign.
 ```kotlin
 @HiltViewModel
 class MainViewModel @Inject constructor() : ViewModel() {
@@ -27,26 +30,58 @@ class MainViewModel @Inject constructor() : ViewModel() {
     }
 }
 ```
-Also, this library provides a raw version of it so that apps have the freedom to decide how to process the data with the given PagingSource.LoadParams by themselves
+2. However, the first method is only suitable for the simple data model. If you have a complex model, then you can use the [easyPager2](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/EasyPager2.kt)
 ```kotlin
-pager(pagerConfig, 0) { params ->
-    val page = params.key ?: 0
-    val response = try {
-        // your own load data logic
-        loadData(page)
-    } catch (exception: Exception) {
-        return@pager PagingSource.LoadResult.Error(exception)
+val pager2 = easyPager2(initialKey = 0){
+    return@easyPager2 loadData2(it)
+}
+
+private suspend fun loadData2(page: Int): PageListVO {
+    delay(1500)
+    val data = mutableListOf("Page $page")
+    repeat(20) {
+        data.add("Item $it")
     }
-    
-    if(reponse.code == HttpCode.Error){
-      return@pager PagingSource.LoadResult.Error()
+    return PageListVO(page, data, page < 2)
+}
+```
+It requires the data model to implement the interface [IHasMoreListVO](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/pagerconfig/IHasMoreListVO.kt) to provide the list data, hasMore sign, preKey and the nextKey.
+```kotlin
+data class PageListVO(var page: Int, var items: MutableList<String>, var hasMore: Boolean) : IHasMoreListVO<Int,String> {
+    override fun hasMore(): Boolean {
+        return hasMore
     }
 
-    return@pager PagingSource.LoadResult.Page(
-        response.list,
-        prevKey = if (page - 1 < 0) null else page - 1,
-        nextKey = if (!response.hasMore) null else page + 1
-    )
+    override fun getList(): List<String> {
+        return items
+    }
+
+    override fun getPreKey(): Int? {
+        return if (page - 1 < 0) null else page - 1
+    }
+
+    override fun getNextKey(): Int? {
+        return page + 1
+    }
+}
+```
+3. Lastly, the library provides the [pager](https://github.com/KevinnZou/compose-pagingList/blob/main/core-paginglist/src/main/java/com/kevinnzou/compose/core/paginglist/Pager.kt) which allows the apps to map their own defined Http Result to Kotlin Standard Result. Then it will map it to PagingSource.LoadResult automatically.
+```kotlin
+pager(pagerConfig, initialKey) { key ->
+    when (val result = loadData(key)) {
+        is HttpResult.Error.BusinessError -> {
+            return@pager Result.failure(Exception("${result.code} - ${result.message}"))
+        }
+        is HttpResult.Error.NetworkError -> {
+            return@pager Result.failure(result.error)
+        }
+        is HttpResult.Success -> {
+            return@pager Result.success(result.response)
+        }
+        else -> {
+            return@pager Result.failure(Exception("Other Exception"))
+        }
+    }
 }
 ```
 ## List
@@ -137,6 +172,7 @@ fun <T : Any> PagingLazyColumn(
             retry
         )
     },
+    emptyListContent: @Composable (() -> Unit)? = { DefaultEmptyListContent() },
     pagingItemContent: @Composable (index: Int, value: T?) -> Unit,
 )
 ```
@@ -184,7 +220,7 @@ fun CustomRefreshingContent() {
 ```
 
 # Download
-The Current Release Version is 0.0.1. For future release, please refer to the release session of the github repository.
+The Current Release Version is 0.0.2. For future release, please refer to the release session of the github repository.
 ``` kotlin
 repositories {
     mavenCentral()
