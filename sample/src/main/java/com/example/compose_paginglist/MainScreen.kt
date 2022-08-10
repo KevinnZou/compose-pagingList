@@ -1,7 +1,10 @@
 package com.example.compose_paginglist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.LinearProgressIndicator
@@ -24,6 +27,7 @@ import com.example.compose_paginglist.ui.theme.ComposepagingListTheme
 import com.kevinnzou.compose.core.paginglist.easylist.PagingLazyColumn
 import com.kevinnzou.compose.core.paginglist.widget.PagingListContainer
 import com.kevinnzou.compose.core.paginglist.widget.itemPaging
+import com.kevinnzou.compose.core.paginglist.widget.itemsIndexed
 
 /**
  * Created By Kevin Zou On 2022/7/5
@@ -36,7 +40,8 @@ fun MainScreen(navController: NavController? = null) {
             "RawPagingList",
             "CustomLoadMore",
             "ErrorPagingList",
-            "EmptyPagingList"
+            "EmptyPagingList",
+            "PagingGrid"
         )
     Column(
         Modifier.fillMaxSize(),
@@ -155,6 +160,35 @@ fun EmptyPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
         PagingContent(value)
     }
 }
+
+@Composable
+fun PagingGridScreen(viewModel: MainViewModel = hiltViewModel()) {
+    val pagerData = viewModel.pager.collectAsLazyPagingItems()
+    PagingListContainer(pagingData = pagerData) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(10.dp)
+        ) {
+            itemsIndexed(pagerData) { index, value ->
+                Box(
+                    Modifier
+                        .background(if (index.rem(2) == 0) Color.Yellow else Color.Magenta)
+                        .height(128.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = value.toString())
+                }
+            }
+            if (pagerData.itemCount.rem(2) != 0) {
+                item { Spacer(Modifier.background(Color.White)) }
+            }
+            itemPaging(pagerData, 2)
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

@@ -51,6 +51,9 @@ class MainActivity : ComponentActivity() {
                             composable("EmptyPagingList") {
                                 EmptyPagingListScreen()
                             }
+                            composable("PagingGrid") {
+                                PagingGridScreen()
+                            }
                         }
                     }
                 }

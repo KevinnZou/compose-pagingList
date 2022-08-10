@@ -1,8 +1,9 @@
 package com.kevinnzou.compose.core.paginglist.widget
 
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
@@ -37,5 +38,36 @@ fun <T : Any> LazyListScope.itemPaging(
                 item { noMoreContent() }
             }
 
+    }
+}
+
+fun <T : Any> LazyGridScope.itemPaging(
+    pagingData: LazyPagingItems<T>,
+    span: Int,
+    loadingContent: @Composable (() -> Unit)? = { DefaultLoadingContent() },
+    noMoreContent: @Composable (() -> Unit)? = { DefaultNoMoreContent() },
+    errorContent: @Composable ((retry: (() -> Unit)?) -> Unit)? = { retry ->
+        DefaultErrorContent(
+            retry
+        )
+    },
+) {
+    when (pagingData.loadState.append) {
+        is LoadState.Loading -> loadingContent?.let { item(span = { GridItemSpan(span) }) { loadingContent() } }
+        is LoadState.Error -> errorContent?.let { item(span = { GridItemSpan(span) }) { errorContent { pagingData.retry() } } }
+        is LoadState.NotLoading ->
+            if (pagingData.loadState.append.endOfPaginationReached && noMoreContent != null) {
+                item(span = { GridItemSpan(span) }) { noMoreContent() }
+            }
+
+    }
+}
+
+fun <T : Any> LazyGridScope.itemsIndexed(
+    items: LazyPagingItems<T>,
+    itemContent: @Composable LazyGridItemScope.(index: Int, value: T?) -> Unit
+) {
+    items(items.itemCount) { index ->
+        itemContent(index, items[index])
     }
 }
