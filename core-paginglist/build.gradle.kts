@@ -126,10 +126,7 @@ afterEvaluate {
 }
 
 dependencies {
-    implementation(libs.androidx.core.ktx)
-    implementation("androidx.appcompat:appcompat:1.4.2")
-    implementation(libs.material3)
-    implementation(libs.bundles.compose.base)
+    implementation(libs.bundles.compose.base.lib)
     api(libs.bundles.paging)
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
