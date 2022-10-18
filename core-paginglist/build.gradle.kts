@@ -65,13 +65,12 @@ fun getPropertyFromProject(key: String) : String{
 afterEvaluate {
     publishing {
         publications {
-            create<MavenPublication>("debug") {
-                groupId = getPropertyFromProject("GROUP_ID")
-                artifactId = getPropertyFromProject("ARTIFACT_ID")
-                version = getPropertyFromProject("VERSION_NAME") + "-SNAPSHOT"
-                from(components["release"])
-//                artifact(tasks["sourcesJar"])
-            }
+//            create<MavenPublication>("debug") {
+//                groupId = getPropertyFromProject("GROUP_ID")
+//                artifactId = getPropertyFromProject("ARTIFACT_ID")
+//                version = getPropertyFromProject("VERSION_NAME") + "-SNAPSHOT"
+//                from(components["release"])
+//            }
             create<MavenPublication>("release") {
                 groupId = getPropertyFromProject("GROUP_ID")
                 artifactId = getPropertyFromProject("ARTIFACT_ID")
@@ -109,7 +108,7 @@ afterEvaluate {
             maven {
                 val releasesRepoUrl = uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
                 val snapshotsRepoUrl = uri("https://s01.oss.sonatype.org/content/repositories/snapshots/")
-                url = if (project.hasProperty("release")) releasesRepoUrl else snapshotsRepoUrl
+                url = if (project.hasProperty("release")) releasesRepoUrl else releasesRepoUrl
                 credentials {
                     val properties = gradleLocalProperties(rootDir)
                     username = properties["mavenCentralUsername"] as String?
