@@ -220,7 +220,7 @@ fun CustomRefreshingContent() {
 ```
 
 # Download
-The Current Release Version is 0.0.3. For future release, please refer to the release session of the github repository.
+The Current Release Version is 0.0.4. For future release, please refer to the release session of the github repository.
 ``` kotlin
 repositories {
     mavenCentral()
