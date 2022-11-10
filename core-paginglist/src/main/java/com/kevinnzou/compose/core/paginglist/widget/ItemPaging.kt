@@ -3,6 +3,7 @@ package com.kevinnzou.compose.core.paginglist.widget
 import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyGridItemScope
+import androidx.compose.foundation.lazy.grid.LazyGridItemSpanScope
 import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.runtime.Composable
 import androidx.paging.LoadState
@@ -68,6 +69,23 @@ fun <T : Any> LazyGridScope.itemsIndexed(
     itemContent: @Composable LazyGridItemScope.(index: Int, value: T?) -> Unit
 ) {
     items(items.itemCount) { index ->
+        itemContent(index, items[index])
+    }
+}
+
+inline fun <T : Any> LazyGridScope.itemsIndexed(
+    items: LazyPagingItems<T>,
+    noinline key: ((index: Int, item: T?) -> Any)? = null,
+    noinline span: (LazyGridItemSpanScope.(index: Int, item: T?) -> GridItemSpan)? = null,
+    crossinline contentType: (index: Int, item: T?) -> Any? = { _, _ -> null },
+    crossinline itemContent: @Composable LazyGridItemScope.(index: Int, value: T?) -> Unit
+) {
+    items(count = items.itemCount,
+        key = if (key != null) { index: Int -> key(index, items[index]) } else null,
+        span = if (span != null) {
+            { span(it, items[it]) }
+        } else null,
+        contentType = { index -> contentType(index, items[index]) }) { index ->
         itemContent(index, items[index])
     }
 }

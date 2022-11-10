@@ -149,6 +149,38 @@ fun RawPagingListScreen(viewModel: MainViewModel = hiltViewModel()) {
 }
 ```
 
+# GridList
+This library also add support for the GridList, you can use it like this:
+```kotlin
+@Composable
+fun PagingGridScreen(viewModel: MainViewModel = hiltViewModel()) {
+    val pagerData = viewModel.pager.collectAsLazyPagingItems()
+    PagingListContainer(pagingData = pagerData) {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(10.dp)
+        ) {
+            itemsIndexed(pagerData) { index, value ->
+                Box(
+                    Modifier
+                        .background(if (index.rem(2) == 0) Color.Yellow else Color.Magenta)
+                        .height(128.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = value.toString())
+                }
+            }
+            if (pagerData.itemCount.rem(2) != 0) {
+                item { Spacer(Modifier.background(Color.White)) }
+            }
+            itemPaging(pagerData, 2)
+        }
+    }
+}
+```
+
 # Customization
 Apps can customize the loading, no more, error content and so on.
 
@@ -220,7 +252,7 @@ fun CustomRefreshingContent() {
 ```
 
 # Download
-The Current Release Version is 0.0.4. For future release, please refer to the release session of the github repository.
+The Current Release Version is 1.0.0. For future release, please refer to the release session of the github repository.
 ``` kotlin
 repositories {
     mavenCentral()
