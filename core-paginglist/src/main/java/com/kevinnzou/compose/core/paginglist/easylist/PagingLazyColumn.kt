@@ -15,12 +15,18 @@ import com.kevinnzou.compose.core.paginglist.widget.*
  * Apps can directly use it by providing the pager data [LazyPagingItems]
  *
  * @param pagingData the paging data
- * @param loadingContent the content will show when list is loading data. By default this will use a [DefaultLoadingContent]
- * @param noMoreContent the content will show when list does not have more data. By default this will use a [DefaultNoMoreContent]
- * @param errorContent the content will show when list encounters an error data. By default this will use a [DefaultErrorContent]
- * @param refreshingContent the content will show when list is loading data. By default this will use a [DefaultRefreshingContent]
- * @param firstLoadErrorContent the content will show when list encounters an error data. By default this will use a [DefaultFirstLoadErrorContent]
- * @param emptyListContent the content will show when list encounters an empty list. By default this will use a [DefaultEmptyListContent]
+ * @param loadingContent the content will show when list is loading data. By default this will use a
+ *     [DefaultLoadingContent]
+ * @param noMoreContent the content will show when list does not have more data. By default this
+ *     will use a [DefaultNoMoreContent]
+ * @param errorContent the content will show when list encounters an error data. By default this
+ *     will use a [DefaultErrorContent]
+ * @param refreshingContent the content will show when list is loading data. By default this will
+ *     use a [DefaultRefreshingContent]
+ * @param firstLoadErrorContent the content will show when list encounters an error data. By default
+ *     this will use a [DefaultFirstLoadErrorContent]
+ * @param emptyListContent the content will show when list encounters an empty list. By default this
+ *     will use a [DefaultEmptyListContent]
  * @param pagingItemContent the content for real paging item
  */
 @Composable
@@ -29,16 +35,12 @@ fun <T : Any> PagingLazyColumn(
     pagingData: LazyPagingItems<T>,
     loadingContent: @Composable (() -> Unit)? = { DefaultLoadingContent() },
     noMoreContent: @Composable (() -> Unit)? = { DefaultNoMoreContent() },
-    errorContent: @Composable ((retry: (() -> Unit)?) -> Unit)? = { retry ->
-        DefaultErrorContent(
-            retry
-        )
+    errorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultErrorContent(retry, error.message)
     },
     refreshingContent: @Composable (() -> Unit)? = { DefaultRefreshingContent() },
-    firstLoadErrorContent: @Composable ((retry: (() -> Unit)?) -> Unit)? = { retry ->
-        DefaultFirstLoadErrorContent(
-            retry
-        )
+    firstLoadErrorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultFirstLoadErrorContent(retry)
     },
     emptyListContent: @Composable (() -> Unit)? = { DefaultEmptyListContent() },
     pagingItemContent: @Composable (index: Int, value: T?) -> Unit,
