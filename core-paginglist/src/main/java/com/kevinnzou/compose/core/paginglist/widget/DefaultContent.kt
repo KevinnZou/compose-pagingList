@@ -56,9 +56,9 @@ fun DefaultNoMoreContent(noMoreText: String = "No More Data") {
 }
 
 @Composable
-fun DefaultErrorContent(retry: (() -> Unit)?, ErrorText: String = "NetWork Error!") {
+fun DefaultErrorContent(retry: (() -> Unit)?, errorText: String? = "NetWork Error!") {
     Text(
-        text = ErrorText,
+        text = errorText ?: "Some Error!",
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)

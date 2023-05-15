@@ -1,8 +1,17 @@
 package com.kevinnzou.compose.core.paginglist.easylist
 
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.kevinnzou.compose.core.paginglist.widget.*
@@ -17,12 +26,18 @@ import com.kevinnzou.compose.core.paginglist.widget.*
  * Apps can directly use it by providing the pager data [LazyPagingItems]
  *
  * @param pagingData the paging data
- * @param loadingContent the content will show when list is loading data. By default this will use a [DefaultLoadingContent]
- * @param noMoreContent the content will show when list does not have more data. By default this will use a [DefaultNoMoreContent]
- * @param errorContent the content will show when list encounters an error data. By default this will use a [DefaultErrorContent]
- * @param refreshingContent the content will show when list is loading data. By default this will use a [DefaultRefreshingContent]
- * @param firstLoadErrorContent the content will show when list encounters an error data. By default this will use a [DefaultFirstLoadErrorContent]
- * @param emptyListContent the content will show when list encounters an empty list. By default this will use a [DefaultEmptyListContent]
+ * @param loadingContent the content will show when list is loading data. By default this will use a
+ *     [DefaultLoadingContent]
+ * @param noMoreContent the content will show when list does not have more data. By default this
+ *     will use a [DefaultNoMoreContent]
+ * @param errorContent the content will show when list encounters an error data. By default this
+ *     will use a [DefaultErrorContent]
+ * @param refreshingContent the content will show when list is loading data. By default this will
+ *     use a [DefaultRefreshingContent]
+ * @param firstLoadErrorContent the content will show when list encounters an error data. By default
+ *     this will use a [DefaultFirstLoadErrorContent]
+ * @param emptyListContent the content will show when list encounters an empty list. By default this
+ *     will use a [DefaultEmptyListContent]
  * @param pagingItemContent the content for real paging item
  */
 @Composable
@@ -31,16 +46,12 @@ fun <T : Any> PagingLazyRow(
     pagingData: LazyPagingItems<T>,
     loadingContent: @Composable (() -> Unit)? = { DefaultLoadingContent() },
     noMoreContent: @Composable (() -> Unit)? = { DefaultNoMoreContent() },
-    errorContent: @Composable ((retry: (() -> Unit)?) -> Unit)? = { retry ->
-        DefaultErrorContent(
-            retry
-        )
+    errorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultErrorContent(retry)
     },
     refreshingContent: @Composable (() -> Unit)? = { DefaultRefreshingContent() },
-    firstLoadErrorContent: @Composable ((retry: (() -> Unit)?) -> Unit)? = { retry ->
-        DefaultFirstLoadErrorContent(
-            retry
-        )
+    firstLoadErrorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultFirstLoadErrorContent(retry)
     },
     emptyListContent: @Composable (() -> Unit)? = { DefaultEmptyListContent() },
     pagingItemContent: @Composable (index: Int, value: T?) -> Unit,
@@ -55,6 +66,54 @@ fun <T : Any> PagingLazyRow(
             itemsIndexed(pagingData) { index, value ->
                 pagingItemContent(index, value)
             }
+            itemPaging(pagingData, loadingContent, noMoreContent, errorContent)
+        }
+    }
+}
+
+@Composable
+fun <T : Any> PagingLazyRow(
+    modifier: Modifier = Modifier,
+    pagingData: LazyPagingItems<T>,
+    loadingContent: @Composable (() -> Unit)? = { DefaultLoadingContent() },
+    noMoreContent: @Composable (() -> Unit)? = { DefaultNoMoreContent() },
+    errorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultErrorContent(retry)
+    },
+    refreshingContent: @Composable (() -> Unit)? = { DefaultRefreshingContent() },
+    firstLoadErrorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultFirstLoadErrorContent(retry)
+    },
+    emptyListContent: @Composable (() -> Unit)? = { DefaultEmptyListContent() },
+    //region LazyColumn parameter
+    state: LazyListState = rememberLazyListState(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    reverseLayout: Boolean = false,
+    horizontalArrangement: Arrangement.Horizontal =
+        if (!reverseLayout) Arrangement.Start else Arrangement.End,
+    verticalAlignment: Alignment.Vertical = Alignment.Top,
+    flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
+    userScrollEnabled: Boolean = true,
+    content: LazyListScope.() -> Unit
+    //endregion
+) {
+    PagingListContainer(
+        pagingData = pagingData,
+        refreshingContent = refreshingContent,
+        firstLoadErrorContent = firstLoadErrorContent,
+        emptyListContent = emptyListContent,
+    ) {
+        LazyRow(
+            modifier,
+            state,
+            contentPadding,
+            reverseLayout,
+            horizontalArrangement,
+            verticalAlignment,
+            flingBehavior,
+            userScrollEnabled
+        ) {
+            content(this)
             itemPaging(pagingData, loadingContent, noMoreContent, errorContent)
         }
     }
