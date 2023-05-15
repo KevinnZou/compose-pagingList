@@ -1,8 +1,17 @@
 package com.kevinnzou.compose.core.paginglist.easylist
 
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollableDefaults
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.itemsIndexed
 import com.kevinnzou.compose.core.paginglist.widget.*
@@ -55,6 +64,54 @@ fun <T : Any> PagingLazyColumn(
             itemsIndexed(pagingData) { index, value ->
                 pagingItemContent(index, value)
             }
+            itemPaging(pagingData, loadingContent, noMoreContent, errorContent)
+        }
+    }
+}
+
+@Composable
+fun <T : Any> PagingLazyColumn(
+    modifier: Modifier = Modifier,
+    pagingData: LazyPagingItems<T>,
+    loadingContent: @Composable (() -> Unit)? = { DefaultLoadingContent() },
+    noMoreContent: @Composable (() -> Unit)? = { DefaultNoMoreContent() },
+    errorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultErrorContent(retry, error.message)
+    },
+    refreshingContent: @Composable (() -> Unit)? = { DefaultRefreshingContent() },
+    firstLoadErrorContent: @Composable ((error: Throwable, retry: (() -> Unit)?) -> Unit)? = { error, retry ->
+        DefaultFirstLoadErrorContent(retry)
+    },
+    emptyListContent: @Composable (() -> Unit)? = { DefaultEmptyListContent() },
+    //region LazyColumn parameter
+    state: LazyListState = rememberLazyListState(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    reverseLayout: Boolean = false,
+    verticalArrangement: Arrangement.Vertical =
+        if (!reverseLayout) Arrangement.Top else Arrangement.Bottom,
+    horizontalAlignment: Alignment.Horizontal = Alignment.Start,
+    flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
+    userScrollEnabled: Boolean = true,
+    content: LazyListScope.() -> Unit
+    //endregion
+) {
+    PagingListContainer(
+        pagingData = pagingData,
+        refreshingContent = refreshingContent,
+        firstLoadErrorContent = firstLoadErrorContent,
+        emptyListContent = emptyListContent,
+    ) {
+        LazyColumn(
+            modifier,
+            state,
+            contentPadding,
+            reverseLayout,
+            verticalArrangement,
+            horizontalAlignment,
+            flingBehavior,
+            userScrollEnabled
+        ) {
+            content(this)
             itemPaging(pagingData, loadingContent, noMoreContent, errorContent)
         }
     }
